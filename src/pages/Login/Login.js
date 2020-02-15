@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import logo from '../img/logoweb.png';
-import api from '../services/api'
+import logo from '../../img/logoweb.png';
+import api from '../../services/api'
 
 import './Login.css'
 
 
 
 export default function Login({history}) {
+    
     const [erroauth, setErroauth] = useState('')
-    const [usuario, setUsuario] = useState(localStorage.getItem('@CodeApi:token'))
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     
@@ -31,7 +31,7 @@ export default function Login({history}) {
             history.push(`/main/${_id}`, {user})
     
         } catch (error) {
-           //setErroauth(error.response.data)
+            setErroauth(error.response.data)
         }
         }
     
