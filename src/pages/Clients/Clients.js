@@ -4,6 +4,7 @@ import api from '../../services/api'
 export default function Clients() {
 
     const [clients, setClients] = useState([])
+    const [msg, setMsg] = useState('')
 
     useEffect(() => {
         async function loadUser() {
@@ -14,8 +15,18 @@ export default function Clients() {
 
         } loadUser()
 
-    }, [])
+    }, [msg])
+    
+    async function deleteProt(e) {
+        try{
 
+            api.delete(`/clients/delete/${e}`)
+            setMsg('Cliente deletado com sucesso!')
+        } catch (err){
+            setMsg('Houve um erro ao deletar cliente!')
+
+        }
+    }
 
     return (
 
@@ -29,6 +40,12 @@ export default function Clients() {
                             <small>{client.slug}</small>
                         </form><br />
                         <small>{client.createdAt}</small>
+                        <a href={`/clients/edit/${client._id}`}>
+                        <button type="button">Editar</button></a>
+                        <button 
+                        type="button"
+                        onClick={e => deleteProt(client._id)}
+                        >Deletar</button>
                     </div>
                 </li>
             ))}

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -7,12 +9,24 @@
 
 html, body, #root{
   height: 100%;
+  background: #f5f5f5;
+
 }
 
-body {
-  background: #f5f5f5;
-}
 
 body, input, button {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+}
+
+
+p {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+   word-wrap: break-word;
+}
+
+span {
+  word-wrap: break-word;
 }
