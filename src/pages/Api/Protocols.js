@@ -10,14 +10,44 @@ export async function singleProtocol(id) {
     return getProtocol
 }
 
-export async function listProtocol() {
+export async function listProtocol(page, perPage) {
 
 
-    const getProtocolList = await api.get(`/protocols`)
+    const getProtocolList = await api.get(`/protocols?page=${page}&perPage=${perPage}`)
 
 
 
 return getProtocolList
+}
+
+export async function newProtocol(client, title, content) {
+
+    const response = await api.post('/protocols/addprotocol', {
+        client,
+        title,
+        content
+    })
+
+    return response
+}
+
+export async function editProtocol(title, content, client, _id) {
+
+    const response = await api.put('/protocols/edit', {
+        title,
+        content,
+        client,
+        _id
+    })
+
+    return response
+}
+
+export async function deleteProtocol(id) {
+
+    const response = await api.delete(`/protocols/delete/${id}`)
+
+    return response
 }
 
 

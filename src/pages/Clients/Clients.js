@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import api from '../../services/api'
+//import ListClient from './ListClient'
+import clientPhoto from '../../img/clients.png'
+import {listClient} from '../Api/Clients'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import Button from 'react-bootstrap/Button'
+import Navbar from '../../components/Navbar'
+import ListCLient from './ListClient'
+import AddClient from './AddClient'
 
 export default function Clients() {
 
@@ -9,7 +16,7 @@ export default function Clients() {
     useEffect(() => {
         async function loadUser() {
 
-            const response = await api.get('/clients')
+            const response = await listClient('/clients')
 
             setClients(response.data)
 
@@ -20,7 +27,7 @@ export default function Clients() {
     async function deleteProt(e) {
         try{
 
-            api.delete(`/clients/delete/${e}`)
+            //api.delete(`/clients/delete/${e}`)
             setMsg('Cliente deletado com sucesso!')
         } catch (err){
             setMsg('Houve um erro ao deletar cliente!')
@@ -29,27 +36,36 @@ export default function Clients() {
     }
 
     return (
+        
+        <>
+        <Navbar/>
+        <div style={{background:'#70a486'}}className="container-fluid mt-5 pt-4 pb-4 mb-2 d-flex">
+                <img className="ml-5" src={clientPhoto} alt="Clientes" height="70"/>              
+            <div className="ml-5">
+                <h1 className="text-light mt-4">Lista de clientes:</h1>
+                </div>
+                <div className="mt-3 ml-5">
+                 <AddClient/>
+                </div>
+                <div className="form-inline ml-auto mr-5 pr-4">
+                     <select value="0" 
+                     name="client" id="client"
+                     onChange={0}
+                     className="form-control"
+                    >
+                    <option value="0">Filtrar por categoria</option>                  
+                        <option value={0}>Lojas</option>
+                        <option value={0}>Mercados</option>
+                        <option value={0}>Industrias</option>
+                        <option value={0}>Mais</option>                           
+                    </select>
+                    <ButtonGroup>
+  <Button variant="success border border-light">Filtrar</Button>
 
-        <ul>
-            <h2>Lista de clientes:</h2><br />
-            {clients.map(client => (
-                <li key={client._id}>
-                    <div className="login-content">
-                        <form>
-                            <h4>{client.name}</h4><br />
-                            <small>{client.slug}</small>
-                        </form><br />
-                        <small>{client.createdAt}</small>
-                        <a href={`/clients/edit/${client._id}`}>
-                        <button type="button">Editar</button></a>
-                        <button 
-                        type="button"
-                        onClick={e => deleteProt(client._id)}
-                        >Deletar</button>
-                    </div>
-                </li>
-            ))}
-        </ul>
-
+</ButtonGroup>
+                </div>
+                </div>
+                <ListCLient clients={clients}/>
+        </>
     )
 }

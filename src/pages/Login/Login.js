@@ -39,8 +39,9 @@ export default function Login({history}) {
 
     return (
         
-        <div className="login-content">
-            <img src={logo} alt="Ess" />
+        <div className="login-content" style={{margin:'0'}}>
+ 
+            <a href="/main"><img src={logo} alt="Ess" /></a>
             {!!erroauth.error && <span>{erroauth.error}</span>}
             <form onSubmit={handleSubmit}>
                 <input type="email" className="text" placeholder="E-mail"

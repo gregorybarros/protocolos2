@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import './Protocols.css'
 import api from '../../services/api'
-import {singleProtocol} from '../Api/Protocols'
+import {singleProtocol, editProtocol} from '../Api/Protocols'
+import {listClient} from '../Api/Clients'
 
 export default function EditProtocols({match, history}) {
     const [protocol, setProtocol] = useState('')
@@ -16,15 +17,15 @@ export default function EditProtocols({match, history}) {
         async function loadEdit() {
             try {
 
-                const response = await singleProtocol(match.params.id)
+                const LoadSingleProt = await singleProtocol(match.params.id)
 
-            setProtocol(response.data)
-            setTitle(response.data.title)
-            setContent(response.data.content)
-            setClient(response.data.client)
+            setProtocol(LoadSingleProt.data)
+            setTitle(LoadSingleProt.data.title)
+            setContent(LoadSingleProt.data.content)
+            setClient(LoadSingleProt.data.client)
 
-            const response2 = await api.get('/clients')
-            setClients(response2.data)
+            const LoadClientList = await listClient()
+            setClients(LoadClientList.data)
 
         } catch (err) {
             history.push('/protocols')
@@ -38,13 +39,8 @@ export default function EditProtocols({match, history}) {
     async function handleSubmit(e) {
         e.preventDefault()
         try {
-            await api.put('/protocols/edit', {
-                title,
-                content,
-                client,
-                _id: protocol._id
-            })
-            history.push('/protocols')
+           await editProtocol(title, content, client, protocol._id)
+                
         } catch (err) {
             console.log(err)
         }

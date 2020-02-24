@@ -18,3 +18,44 @@ export async function listClient() {
 
 return getClientList
 }
+
+export async function newClient(code, name, category, resp, email, 
+    adress, city, zip, state, since, obs, soft, phone) {
+
+    const response = await api.post('/clients/addclient', {
+        code,
+        name,
+        category,
+        resp,
+        email,
+        adress,
+        city,
+        zip,
+        state,
+        since,
+        obs,
+        soft,
+        phone
+    })
+
+    return response
+}
+
+export async function editClient(name, slug, _id) {
+
+    const response = await api.put('/clients/edit', {
+        name,
+        slug,
+        _id
+    })
+
+    return response
+}
+
+export async function deleteClient(id) {
+
+    const response = await api.delete(`/clients/delete/${id}`)
+
+    return response
+}
+
