@@ -41,9 +41,14 @@
     font-weight: bold;
     cursor: pointer;
     color: #fff;
-    background: rgb(245, 140, 42);
+    background: #fca43c;
     
     
+}
+
+.login-content form button:hover {
+    background: #fc9b3c;
+    transition: all .3s;
 }
 
 

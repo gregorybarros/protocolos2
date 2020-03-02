@@ -2,11 +2,25 @@ import React, { useState, useEffect } from 'react'
 import team from '../../img/team.png'
 import Navbar from '../../components/Navbar'
 import ListUser from '../Users/ListUser'
+import AddUser from './AddUser'
+import api from '../../services/api'
 
 
 export default function Users(){
 
+    const [users, setUsers] = useState([])
+    const [user] = useState(JSON.parse(localStorage.getItem('@CodeApi:user')))
 
+    useEffect(() => {
+
+
+        async function loadUsers(){
+
+            const resp = await api.get('/users')
+            setUsers(resp.data)
+
+        }loadUsers()
+    },[])
 
 
     return(
@@ -17,10 +31,14 @@ export default function Users(){
             <div className="ml-5">
                 <h1 className="text-light mt-4">Equipe:</h1>
                 </div>
+                {!!user.eAdmin&&
+                <div className="mt-3 ml-5">
+      <AddUser/>
+    </div>}
                 <div className="form-inline ml-auto mr-5 pr-4">
                 </div>
                 </div>
-                <ListUser/>
+                <ListUser users={users}/>
         </>
     )
 

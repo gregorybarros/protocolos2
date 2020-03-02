@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import {singleProtocol, listProtocol, editProtocol, deleteProtocol} from '../Api/Protocols'
+import {singleProtocol, editProtocol, deleteProtocol} from '../Api/Protocols'
 import {listClient} from '../Api/Clients'
+import UserInfo from '../Users/UserInfo'
+import InfiniteScroll from 'react-infinite-scroller'
 
 // Bootstrap
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
-import Card, { CardBody } from 'react-bootstrap/Card'
+import Card from 'react-bootstrap/Card'
 import Table from 'react-bootstrap/Table'
+import Spinner from 'react-bootstrap/Spinner'
 
 
-export default function ListProtocols(props,{ history }) {
+export default function ListProtocols(props) {
+
+    const [user] = useState(JSON.parse(localStorage.getItem('@CodeApi:user')))
 
     const [showProt, setShowProt] = useState(false);
     const handleCloseProt = () => setShowProt(false);
@@ -23,21 +28,46 @@ export default function ListProtocols(props,{ history }) {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true)
 
-    let [page, setPage] = useState(false)
+    const [showUser, setShowUser] = useState(false);
+    const handleCloseUser = () => setShowUser(false);
+    const handleShowUser = () => setShowUser(true);
+  
+    const [showUserEdit, setShowUserEdit] = useState(false);
+    const handleCloseUserEdit = () => setShowUserEdit(false);
+    const handleShowUserEdit = () => setShowUserEdit(true);
+  
+    const [showUserPhrase, setShowUserPhrase] = useState(false);
+    const handleCloseUserPhrase = () => setShowUserPhrase(false);
+    const handleShowUserPhrase = () => setShowUserPhrase(true);
+  
     
-
+    function getUser(id) {
+      
+      setUserProt(id)
+      handleShowUser()
+      
+    }
+    
+    
+    const [userProt, setUserProt] = useState('')
     let [clients, setClients] = useState([])
     let [client, setClient] = useState('')
     let [clientName, setClientName ] = useState('')
     let [msg, setMsg] = useState('')
     let [editId, setEditId] = useState('')
+    const [userEdit, setUserEdit] = useState('')
 
     let [editTitle, setEditTitle] = useState('')
     let [editContent, setEditContent] = useState('')
+    const [editNum, setEditNum] = useState('')
 
 
 
     useEffect(() => {
+      if(props.showUser){
+        setShowUser(props.showUser)
+        setUserProt(props.user)
+      }
 
         setMsg('')
         async function loadProtocols() {
@@ -48,7 +78,7 @@ export default function ListProtocols(props,{ history }) {
 
         } loadProtocols()
 
-    }, [msg]) 
+    }, [props.showUser,msg]) 
 
     async function setDeleteProt() {
 
@@ -82,6 +112,9 @@ export default function ListProtocols(props,{ history }) {
         setEditId(protocol.data._id)
         setEditTitle(protocol.data.title)
         setEditContent(protocol.data.content)
+        setUserEdit(protocol.data.user)
+        setEditNum(protocol.data.num)
+        
     
         handleShowProt()
     
@@ -100,28 +133,39 @@ export default function ListProtocols(props,{ history }) {
         }
 
     }
+    //console.log('teste')
 
     return (
         <>
-        <small className="ml-2 d-flex text-secondary"><strong>Ordenar:</strong>
-        <a href="#" className="badge badge-light p-1 ml-2">Novos</a>
-        <a href="#" className="badge badge-light p-1 ml-1">Antigos</a>
-        <a href="#" onClick={e => setPage(false)} className="badge badge-light p-1 ml-1">Grade</a>
-        <a href="#" onClick={e => setPage(true)} className="badge badge-light p-1 ml-1 mr-auto">Lista</a>
-        
-        </small>
+        <UserInfo showUser={showUser} handleCloseUser={handleCloseUser} 
+        showUserEdit={showUserEdit} handleCloseUserEdit={handleCloseUserEdit} handleShowUserEdit={handleShowUserEdit}
+        showUserPhrase={showUserPhrase} handleCloseUserPhrase={handleCloseUserPhrase} handleShowUserPhrase={handleShowUserPhrase}
+    user={userProt}/>
+        <InfiniteScroll
+    pageStart={props.page}
+    loadMore={props.loadPage}
+    hasMore={props.error}
+    loader={<div className="loader" style={{display:"flex"}} key={Math.random()}>
+      <Spinner animation="grow" variant="warning mx-auto">
+    <span className="sr-only">Loading...</span>
+  </Spinner></div>}
+>
                     <div id="gradao" name="gradao"className="form-inline">
-                    {!page?props.protocols.map(protocol => (
+                    {!props.layout?props.protocols.map(protocol => (
                         <div bg="light" 
                         id="grade" name="grade"                        
-                            className=""
                             border="right"
                             key={protocol._id}
                             text="dark">
-                            <Card.Header className="m-0 p-1 bg-dark text-truncate">
-                                <a href="#" className="badge badge-dark">
+                            <Card.Header className="m-0 p-1 bg-dark text-truncate d-flex">
+                                <a href={`/clients/${protocol.client._id}`} className="badge btn-dark mr-auto">
                                     {protocol.client ? protocol.client.name : 'Sem empresa'}
                                 </a>
+                                <Button onClick={e => showProtocol(protocol._id)}
+                                className="badge btn-dark"
+                                style={{cursor:'pointer'}}>
+                                    {protocol.num}
+                                </Button>
                             </Card.Header>
                             <Card.Body
                             onClick={e => showProtocol(protocol._id)}
@@ -135,7 +179,9 @@ export default function ListProtocols(props,{ history }) {
                             </Card.Body>
                             <Card.Footer className="m-0 p-0 d-flex border" style={{background:'#d9d8d7'}}>
                             <small className="ml-2 mb-1 font-italic">Autor: 
-                            <a href="#" style={{background:'#91d1ac'}} className="text-dark badge badge-success p-1 ml-1">Gregory</a>
+                    <Button style={{background:'#91d1ac'}} 
+                    onClick={e => getUser(protocol.user._id)}
+                    className="text-dark badge btn-success p-1 ml-1 border">{protocol.user.name}</Button>
                             </small>
                             <small className="mr-2 font-weight-bold ml-auto">{protocol.date}
                             </small>
@@ -144,32 +190,36 @@ export default function ListProtocols(props,{ history }) {
 
             
             
-<Table className="mt-3" striped bordered hover size="lg" variant="" responsive>
+<Table className="mt-3" striped bordered hover size="sm" variant="" responsive>
                 
   <thead>
     <tr>
-      <th className='border border-dark'>N°</th>
-      <th className='border border-dark'>Cliente</th>
-      <th className='border border-dark'>Titulo</th>
-      <th className='border border-dark'>Conteúdo</th>
-      <th className='border border-dark'>Autor</th>
+      <th>N°</th>
+      <th>Cliente</th>
+      <th>Titulo</th>
+      <th>Conteúdo</th>
+      <th>Autor</th>
     </tr>
   </thead>
   <tbody >
     {props.protocols.map(protocol => (
-    <tr onClick={e => showProtocol(protocol._id)} key={protocol._id}>
-      <td className='border border-dark'>Num</td>
-      <td className='border border-dark'>{protocol.client.name}</td>
-    <td className='border border-dark'><p>{protocol.title}</p></td>
-    <td className='border border-dark'><p>{protocol.content}</p></td>
-    <td className='border border-dark'>Gregory</td>
+    <tr key={protocol._id}>
+      <td onClick={e => showProtocol(protocol._id)}>{protocol.num}</td>
+      <td><a className="text-dark" href={`/clients/${protocol.client._id}`}><strong>{protocol.client.name}</strong></a></td>
+    <td onClick={e => showProtocol(protocol._id)}><p>{protocol.title}</p></td>
+    <td onClick={e => showProtocol(protocol._id)}><p>{protocol.content}</p></td>
+    <td><Button 
+    style={{background:'#91d1ac'}} 
+    className="text-dark badge btn-success p-1 ml-1 border"
+    onClick={e => getUser(protocol.user._id)}
+    ><strong>{protocol.user.name}</strong></Button></td>
     </tr>
       ))}
   </tbody>
 </Table>}
 </div>
                 
-
+</InfiniteScroll>
 
 
             <Modal show={show} onHide={handleClose} size="sm" className="text-center">
@@ -180,10 +230,12 @@ export default function ListProtocols(props,{ history }) {
                     Você tem certeza que deseja <strong>DELETAR</strong> este protocolo?
                 </Modal.Body>
                 <Modal.Footer className="p-0 border-light d-flex">
+                    <form onSubmit={setDeleteProt}>
                         <Button variant="danger"
-                        onClick={e => setDeleteProt()}>
+                        type="submit">
                         Deletar
                     </Button>
+                    </form>
                     <Button className="ml-auto"
                     variant="secondary" onClick={handleClose}>
                         Cancelar
@@ -195,23 +247,32 @@ export default function ListProtocols(props,{ history }) {
 
       <Modal show={showProt} onHide={handleCloseProt}> 
         <Modal.Header closeButton>
-              <Modal.Title>
+              <Modal.Title className="pb-0">
                 <p>{clientName?clientName:"Sem empresa"}</p>
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{cursor:'pointer'}} 
-        onClick={e=> (handleCloseProt(), handleShowEdit())}>
-            <p>{editTitle}</p>   
+                <small className="mt-1 ml-3">Prot. {editNum}</small>
+        <Modal.Body style={{cursor:'pointer'}}
+        
+        onClick={e=> user._id===userEdit._id || user.eAdmin?(handleCloseProt(), handleShowEdit()):null}
+        >
+            <p><strong>{editTitle}</strong></p>   
             <span>&nbsp;&nbsp;{editContent}</span>
         </Modal.Body>
         <Modal.Footer>
+            <small className="ml-2 mb-1 font-italic mr-auto">Autor: 
+                    <a href="#" style={{background:'#91d1ac'}} className="text-dark badge badge-success p-1 ml-1">{userEdit.name}</a>
+            </small>
+        {user._id===userEdit._id || user.eAdmin?
+        <div>
           <Button variant="secondary" onClick={e=> (handleCloseProt(), handleShowEdit())}>
             Editar
           </Button>
-          <Button variant="danger" onClick={e => (handleShow(),handleCloseProt())}>
+          <Button variant="danger ml-1" onClick={e => (handleShow(),handleCloseProt())}>
             Deletar
           </Button>
-          </Modal.Footer> 
+          </div>:null} 
+          </Modal.Footer>
       </Modal>
 
 

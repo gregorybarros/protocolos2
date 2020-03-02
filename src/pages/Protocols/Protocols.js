@@ -2,47 +2,101 @@ import React, { useState, useEffect } from 'react'
 import './Protocols.css'
 import ListProtocol from './ListProtocol'
 import protFoto from '../../img/protocols.png'
-import {listClient} from '../Api/Clients'
-import { listProtocol } from '../Api/Protocols'
 import AddProtocol from './AddProtocol'
+import api from '../../services/api'
 
 
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Button from 'react-bootstrap/Button'
+import Spinner from 'react-bootstrap/Spinner'
 import Navbar from '../../components/Navbar'
 
 
 
 
-export default function Protocols() {
+export default function Protocols({history}) {
 
-    let [clients, setClients] = useState([])
-    let [client, setClient] = useState('')
     let [protocols, setProtocols] = useState([])
+    const [searchProt, setSearchProt] = useState(0)
+
+    const [layout, setLayout] = useState(false)
+    const [sort, setSort] = useState('desc')
+    const [page, setPage] = useState(1) // seleciona pagina
+    const [totalPerPage] = useState(30) // total por paginas
+    const [error, setError] = useState(false) // infinite scroll
+    const [errorSearch, setErrorSearch] = useState('')
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
 
+       loadPage()
 
-        async function loadClients(){
+    },[sort])
 
-            const getUserProtocols = await listProtocol()
-            const filterProtocols = await getUserProtocols.data.docs.filter(e=>{
-            return e.client._id==='5e4b2845e3f186259cd4ffda' || e // Filtrar por id       
-        })
+    async function loadPage(){
+        
+        setError(false)
+        const getProtocols = await api.get(`/protocols/?sort=${sort}&page=${page}&perPage=${totalPerPage}`)
 
+      if(page>getProtocols.data.pages) {
+        return setError(false)
 
-        setProtocols(getUserProtocols.data.docs)
-                
+      }else {
+      
+        setError(true)      
+        
+        setProtocols([...protocols,...getProtocols.data.docs])
+        
+        setPage(page+1)
+        setLoading(false)
+        
 
-            const response = await listClient()
-            setClients(response.data)
-        }loadClients()
+        } 
+            
 
+    }
 
-    },[])
+    async function search(e){
 
+        setLoading(true)
+        setError(false)
+        setErrorSearch('')
+        
+        if(!searchProt || searchProt <= 0){
+            return 
+        }
+        else {
+            e.preventDefault()
+            try {
+                const resp = await api.get(`/protocols/?filter=num&equal=${searchProt}`)
+            setProtocols(resp.data.docs)
+
+            if(resp.data.docs.length==0)
+            return setErrorSearch(searchProt),setLoading(false)
+
+            setLoading(false)
+            }
+            catch (err){
+                alert('Erro ao encontrar protocolo!')
+                console.log(err)
+            }
+            
+        }       
+
+    }
+
+    async function Ordenate(ord){
+        
+        if(ord==sort){
+        return
+        } else {
+        setProtocols([])
+        setPage(1)
+        setSort(ord)
+        }
+    } 
 
     return (
         
@@ -54,22 +108,14 @@ export default function Protocols() {
                 <h1 className="text-light mt-4">Lista de protocolos:</h1>
                 </div>
                 <div className="mt-3 ml-5">
-      <AddProtocol/>
+      <AddProtocol history={history}/>
     </div>
                 <div className="form-inline ml-auto mr-5 pr-4">
-                     <select value="0" 
-                     id="search"
-                     name="client" id="client"
-                     onChange={e => setClient(e.target.value)}
-                     className="form-control ml-5"
-                    >
-                    <option value="0">Filtrar por cliente</option>
-                    {clients.map(c => (                        
-                        <option key={c._id}value={c._id}>{c.name}</option>                           
-                    ))}
-                    </select>
+                    <form onSubmit={search}>
+                    <input type="number" className="form-control" placeholder="N. protocolo"
+                    onChange={e => setSearchProt(e.target.value)}/>
                     <ButtonGroup>
-  <Button variant="success border border-light">Filtrar</Button>
+  <Button variant="success border border-light" type="submit">Buscar</Button>
   <DropdownButton as={ButtonGroup} variant="outline-success border border-light text-light" title="Mais" id="bg-nested-dropdown">
     <Dropdown.Item eventKey="1">Periodo</Dropdown.Item>
     <Dropdown.Item eventKey="2">Titulo</Dropdown.Item>
@@ -78,9 +124,25 @@ export default function Protocols() {
   </DropdownButton>
 
 </ButtonGroup>
+  </form>
                 </div>
                 </article>
-                    <ListProtocol protocols={protocols}/>
+
+        <small className="ml-2 d-flex text-secondary"><strong>Ordenar:</strong>
+            <Button  onClick={e => Ordenate('desc')} className="badge btn-light p-0 ml-2">Novos</Button>
+            <Button  onClick={e => Ordenate('1')} className="badge btn-light p-0 ml-1">Antigos</Button>           
+            <Button size="sm" onClick={e => setLayout(false)} className="badge btn-light p-0 ml-1">Quadro</Button>
+            <Button size="sm" onClick={e => setLayout(true)} className="badge btn-light p-0 ml-1 mr-auto">Tabela</Button>   
+        </small>
+
+                    {loading&&<div className="loader" style={{display:"flex"}}>
+                    <Spinner animation="grow" variant="warning mx-auto">
+                    <span className="sr-only">Loading...</span>
+                  </Spinner></div>}
+                    <ListProtocol 
+                    layout={layout} protocols={protocols} page={page} loadPage={loadPage} error={error}/>
+                    {errorSearch&&<h1 className="mt-3">Protocolo {errorSearch} não encontrado!</h1>}
+
         </>
     )
 }

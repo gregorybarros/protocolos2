@@ -41,11 +41,23 @@ export async function newClient(code, name, category, resp, email,
     return response
 }
 
-export async function editClient(name, slug, _id) {
+export async function editClient(code, name, category, resp, email, 
+    adress, city, zip, state, since, obs, soft, phone, _id) {
 
     const response = await api.put('/clients/edit', {
+        code,
         name,
-        slug,
+        category,
+        resp,
+        email,
+        adress,
+        city,
+        zip,
+        state,
+        since,
+        obs,
+        soft,
+        phone,
         _id
     })
 

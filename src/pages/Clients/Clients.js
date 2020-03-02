@@ -8,17 +8,19 @@ import Navbar from '../../components/Navbar'
 import ListCLient from './ListClient'
 import AddClient from './AddClient'
 
-export default function Clients() {
+export default function Clients({history}) {
 
     const [clients, setClients] = useState([])
+    const [client, setClient] = useState('')
     const [msg, setMsg] = useState('')
 
     useEffect(() => {
         async function loadUser() {
-
+            
             const response = await listClient('/clients')
 
             setClients(response.data)
+            
 
         } loadUser()
 
@@ -48,24 +50,23 @@ export default function Clients() {
                  <AddClient/>
                 </div>
                 <div className="form-inline ml-auto mr-5 pr-4">
-                     <select value="0" 
+                <select 
                      name="client" id="client"
-                     onChange={0}
-                     className="form-control"
+                     onChange={e => setClient(e.target.value)}
+                     className="form-control m-0 p-0"
                     >
-                    <option value="0">Filtrar por categoria</option>                  
-                        <option value={0}>Lojas</option>
-                        <option value={0}>Mercados</option>
-                        <option value={0}>Industrias</option>
-                        <option value={0}>Mais</option>                           
-                    </select>
+                    <option value="0">Escolha um cliente</option>
+                    {clients.map(c => (                        
+                        <option key={c._id}value={c._id}>{c.name}</option>                           
+                    ))}
+                </select>
                     <ButtonGroup>
-  <Button variant="success border border-light">Filtrar</Button>
+  <Button variant="success border border-light" type="button" href={`/clients/${client}`}>Filtrar</Button>
 
 </ButtonGroup>
                 </div>
                 </div>
-                <ListCLient clients={clients}/>
+                <ListCLient clients={clients} history={history}/>
         </>
     )
 }

@@ -1,82 +1,89 @@
 import React, { useEffect, useState } from 'react'
 import api from '../../services/api'
-import user from '../../img/greg.png'
+import useri from '../../img/user.svg'
 import prot from '../../img/protocol.png'
 import Container from 'react-bootstrap/Container'
-import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
 import Jumbotron from 'react-bootstrap/Jumbotron'
-import Carousel from 'react-bootstrap/Carousel'
 import Card from 'react-bootstrap/Card'
-import Alert from 'react-bootstrap/Alert'
 import Image from 'react-bootstrap/Image'
-import Col from 'react-bootstrap/Col'
-import Row from 'react-bootstrap/Row'
 import ListProtocol from '../Protocols/ListProtocol'
 import AddProtocol from '../Protocols/AddProtocol'
-
-import InfiniteScroll from 'react-infinite-scroller'
-import Spinner from 'react-bootstrap/Spinner'
+import Button from 'react-bootstrap/Button'
 import Navbar from '../../components/Navbar'
 
-
-
-
+import moment from 'moment'
+import 'moment/locale/pt-br'
 
 
 
 
 export default function Main({ match }) {
 
-    const [usuario] = useState(JSON.parse(localStorage.getItem('@CodeApi:user')))
+    const [user] = useState(JSON.parse(localStorage.getItem('@CodeApi:user')))
+    const [userInfo, setUserInfo] = useState({})
     const [protocols, setProtocols] = useState([])
     const [page, setPage] = useState(1) // seleciona pagina
-    const [totalPerPage, setTotalPerPage] = useState(10) // total por paginas
-    const [total, setTotal] = useState(1) // total pages
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(true)
+    const [totalPerPage] = useState(20) // total por paginas
+    const [equal] = useState(user._id) // total pages
+    const [sort, setSort] = useState('desc')
+    const [layout, setLayout] = useState(false)
+    const [error, setError] = useState(false)
 
+    const [showUser, setShowUser] = useState(false)
+    
 
 
     useEffect(() => {
-      const navigationOptions = { title: 'Welcome', header: null };
+      moment.locale('pt-br')
+      setShowUser(false)
+      
       loadPage()
 
-      }, [])
+      }, [showUser,sort])
 
 
         
 
     async function loadPage(){
-      
-      //setInterval(() => {
-       // console.log('Interval triggered');
-      //}, 1000);
 
-      const getUserProtocols = await api.get(`/protocols/?page=${page}&perPage=${totalPerPage}`)
-      //const filterProtocols = await getUserProtocols.data.docs.filter(e=>{
-      //return e.client._id==='5e4b2845e3f186259cd4ffda' || e // Filtrar por id
-      //})
-      
-      //const selectProtocols = await filterProtocols.splice(0,4) // Selecionar apenas 4 primeiros
+      setError(false)
 
-      
-      setProtocols([...protocols,...getUserProtocols.data.docs])
-      setTotal(getUserProtocols.data.pages/10)
-      setLoading(false)
+      const resp = await api.get(`/users/${user._id}`)
+      setUserInfo(resp.data)
 
+      const getUserProtocols = await api.get(`/protocols/?sort=${sort}&page=${page}&perPage=${totalPerPage}&filter=user&equal=${equal}`)
+      
+      if(page>getUserProtocols.data.docs) {
+        return setError(false)
+
+      }else {
+      
+        setError(true)
+        
+        setProtocols([...protocols,...getUserProtocols.data.docs])
+            
         setPage(page+1)
 
-      
-      if(page==(total*10)){
-        return setError(false)}
+        } 
 
-    } 
+    }
+
+    async function Ordenate(ord){
+        
+      if(ord==sort){
+      return
+      } else {
+      setProtocols([])
+      setPage(1)
+      setSort(ord)
+      }
+  } 
 
     return (
       
         <>
-        <Navbar/>    
+        <Navbar/> 
+
         <label name="margin" id="margin"/>
       
 <card
@@ -90,37 +97,51 @@ className="mr-0 d-flex">
       <AddProtocol/>
     </div>
     </div>
+    <small className="ml-2 d-flex text-secondary"><strong>Ordenar:</strong>
+            <Button  onClick={e => Ordenate('desc')} className="badge btn-light p-0 ml-2">Novos</Button>
+            <Button  onClick={e => Ordenate('1')} className="badge btn-light p-0 ml-1">Antigos</Button>           
+            <Button size="sm" onClick={e => setLayout(false)} className="badge btn-light p-0 ml-1">Quadro</Button>
+            <Button size="sm" onClick={e => setLayout(true)} className="badge btn-light p-0 ml-1 mr-auto">Tabela</Button>   
+        </small>
     <div className="p-3" style={{background:'#c9ddc7'}}>
-    <InfiniteScroll
-    pageStart={page}
-    loadMore={loadPage}
-    hasMore={error}
-    loader={<div className="loader" style={{display:"flex"}} key={Math.random()}>
-      <Spinner animation="grow" variant="warning mx-auto">
-    <span className="sr-only">Loading...</span>
-  </Spinner></div>}
->
-   <ListProtocol protocols={protocols}/>
-   </InfiniteScroll>
+   <ListProtocol 
+   layout={layout} protocols={protocols} page={page} loadPage={loadPage} error={error} showUser={showUser} user={user._id}/>
    </div>
   </Card >
   </Container>
 <div name='divusermain' id='divusermain'>
-    <div className="d-flex" name='divuser' id='divuser'><Image style={{boxShadow:'0px 0px 10px 2px #0008'}} className="mx-auto mb-2" src={user} alt="User" height="120"roundedCircle/>
+  <label name="margin" id="margin"/>
+    <div className="d-flex" name='divuser' id='divuser' onClick={e => setShowUser(true)}><Image style={{boxShadow:'0px 0px 10px 2px #0008'}} className="mx-auto mb-2" src={useri} alt="User" height="120"roundedCircle/>
     </div>
-    <div className="d-flex"><h1 className='mt-2 mb-3 text-dark mx-auto font-weight-bold'>Olá, Gregory!</h1></div>
+    <div className="d-flex"><h1 className='mt-2 mb-3 text-dark mx-auto font-weight-bold'>Olá, {userInfo.name}!</h1></div>
   <div name='divscore' id='divscore'>
   <Jumbotron className="p-3 m-0 text-dark font-weight-bold" 
   style={{background:'#70a486', height:'280px', width:'300px', borderRadius:"10px", boxShadow:'0px 5px 5px  #0005'}}>
-      Nome <br/> E-mail <br/> Total protocolos/mes <br/> Tempo de registro <br/> Avatar <br/> Descricao <br/> Editar perfil
+      <div className="mb-2 text-dark">
+        <div className="d-flex" style={{height:"70px",alignItems:"center"}}>
+          <h6 className="mx-auto"><p className="font-italic">“{userInfo.phrase&&userInfo.phrase}”</p></h6>
+        </div>
+        <div className="d-flex text-light mb-4" id="divnavbar">
+        <h5 className="mx-auto">Total de Protocolos:</h5>
+        </div>
+        <div className="mt-1 d-flex">
+        <h5 className="mx-auto"><strong>{userInfo.totalProt} neste mês.</strong></h5>
+        </div>
+        <div className="mb-4 mt-1 d-flex">
+        <h5 className="mx-auto"><strong>{userInfo.totalProt} total.</strong></h5>
+        </div>
+        <div className="d-flex">
+        <small className="mx-auto"><strong>Agradecemos por te-lo conosco desde</strong></small>
+        </div>
+        <div className="d-flex">
+        <small className="mx-auto"><strong>{moment(userInfo.dateAdm).format('L')}</strong></small>
+        </div>
+      </div>
 </Jumbotron>
 </div>
 </div>
 
-
-
 </card>
-
 
         </>
     )

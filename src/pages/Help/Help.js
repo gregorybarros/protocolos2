@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import help from '../../img/help.png'
 import Navbar from '../../components/Navbar'
 
 
 export default function Help(){
-
-
 
 
     return(

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import {newClient} from '../Api/Clients'
-import api from '../../services/api'
 
 
 // Bootstrap
@@ -11,7 +10,7 @@ import Container from 'react-bootstrap/Container'
 import Modal from 'react-bootstrap/Modal'
 
 
-export default function AddProtocol() {
+export default function AddClient() {
 
   const [show, setShow] = useState(false);
 
@@ -29,15 +28,13 @@ export default function AddProtocol() {
     const [zip, setZip] = useState('')// Cep
     const [state, setState] = useState('')// Estado
     const [obs, setObs] = useState('')//Observacoes
-    const [phone, setPhone] = useState([])//Telefones
-    const [cell, setCell] = useState([])//Celulares
+    const [phone, setPhone] = useState('')//Telefones
     const [soft, setSoft] = useState([])//Softwares
 
 
 
     async function handleSubmit(e) {
-console.log(cell)
-      setPhone([phone,cell])
+
 
         e.preventDefault()
         try {
@@ -57,6 +54,7 @@ console.log(cell)
                 phone
 
             )
+            handleClose()
             console.log(response)
         } catch (err){
             console.log(err)
@@ -89,7 +87,7 @@ console.log(cell)
 
         <div name="divnavbar" id="divnavbar">
             <div name="divbutton" id="divbutton"><Button 
-    variant="warning pb-3 pt-3" style={{height:'100%', width:'100%'}} 
+    variant="warning pb-3 pt-3" style={{height:'100%', width:'100%', background:'#f5c13d'}} 
     type="button"
     onClick={handleShow}>
      <strong>Novo!</strong>
@@ -97,7 +95,7 @@ console.log(cell)
 
 <Modal show={show} onHide={handleClose} size="lg">
         <Form onSubmit={handleSubmit}>
-        <Modal.Header closeButton>
+        <Modal.Header className="border-white" closeButton>
           <Modal.Title>Novo cliente</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -132,10 +130,10 @@ console.log(cell)
       onChange={e => setCategory(e.target.value)}
       as="select" defaultValue="0">
       <option value="0">Selecione a categoria</option>
-      <option value="mercado">Mercado</option>
-      <option value="padaria">Padaria</option>
-      <option value="loja">Loja</option>
-      <option value="fabrica">Fabrica</option>
+      <option value="Mercado">Mercado</option>
+      <option value="Padaria">Padaria</option>
+      <option value="Loja">Loja</option>
+      <option value="Fabrica">Fabrica</option>
     </Form.Control>
     </Form.Group>
 
@@ -161,21 +159,15 @@ console.log(cell)
       <Form.Label>Telefones</Form.Label>
       <Form.Control 
       onChange={e => setPhone(e.target.value)}
-      type="text"  placeholder="Insira os telefones" />
+      type="text"  placeholder="Insira um ou mais telefones ex. 19 99999-9999 / outro..." />
     </Form.Group>
 
-    <Form.Group as={Col} controlId="formGridPhone2">
-      <Form.Label>Celulares</Form.Label>
-      <Form.Control 
-      onChange={e => setCell(e.target.value)}
-      type="text" placeholder="Insira os celulares" />
-    </Form.Group>
 
     </Form.Row>
 
   <Form.Row>
 
-    <Form.Group as={Col} controlId="formGridPassword">
+    <Form.Group as={Col} controlId="formGridObs">
       <Form.Label>Observações</Form.Label>
       <Form.Control 
       onChange={e => setObs(e.target.value)}
@@ -192,21 +184,21 @@ console.log(cell)
       <Col sm={10}>
       <Form.Check
         onChange={e => selectSoft(e.target.value)}
-              value="cash"
+              value="Cash"
               name="cash"
               label="Cash"
               id="cash"
             />
               <Form.Check  
               onChange={e => selectSoft(e.target.value)} 
-              value="vcash"
+              value="Vcash"
               name="vcash"
               label="Vcash"
               id="vcash"
             />
               <Form.Check
               onChange={e => selectSoft(e.target.value)}
-              value="cashfood"
+              value="Cashfood"
               name="cashfood"
               label="Cash Food"
               id="cashfood"
@@ -222,7 +214,7 @@ console.log(cell)
     <Form.Label>Endereço</Form.Label>
     <Form.Control 
     onChange={e => setAdress(e.target.value)}
-    placeholder="Insira a rua, numero, bloco, apartamento" />
+    placeholder="Ex. Av. Nossa Sra. de Fátima, 2700 - Vila Israel" />
   </Form.Group>
 
   <Form.Row>
@@ -239,9 +231,9 @@ console.log(cell)
       <Form.Control 
       onChange={e => setState(e.target.value)}
       as="select" defaultValue="0">
-          <option value="sp">Insira o estado</option>
-        <option value="sp">SP</option>
-        <option value='mg'>MG</option>
+          <option value="0">Insira o estado</option>
+        <option value="SP">SP</option>
+        <option value='SP'>MG</option>
       </Form.Control>
     </Form.Group>
 
@@ -259,7 +251,7 @@ console.log(cell)
           <Button variant="secondary " onClick={handleClose}>
             Fechar
           </Button>
-          <Button  variant="success ml-auto" onClick={handleClose}>
+          <Button  type="submit" variant="success ml-auto">
             Cadastrar
           </Button>
         </Modal.Footer>

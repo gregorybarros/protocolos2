@@ -10,10 +10,10 @@ export async function singleProtocol(id) {
     return getProtocol
 }
 
-export async function listProtocol(page, perPage) {
+export async function listProtocol(page, perPage, filter, equal) {
 
 
-    const getProtocolList = await api.get(`/protocols?page=${page}&perPage=${perPage}`)
+    const getProtocolList = await api.get(`/protocols?page=${page}&perPage=${perPage}&filter=${filter}&equal=${equal}`)
 
 
 

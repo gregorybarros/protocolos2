@@ -1,20 +1,24 @@
 import React from 'react';
-import logo from '../img/logoweb.png';
-import user from '../img/greg.png'
+import logo from '../img/logoweb.png'
+import pencil from '../img/pencil.svg'
+import user from '../img/user.svg'
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
-import NavDropdown from 'react-bootstrap/NavDropdown'
-import Button from 'react-bootstrap/Button'
-import FormControl from 'react-bootstrap/FormControl'
 import Form from 'react-bootstrap/Form'
 import Image from 'react-bootstrap/Image'
 
 
-export default function setNavbar() {
+export default function setNavbar(props) {
+
+  const {name} = JSON.parse(localStorage.getItem('@CodeApi:user'))
+
+  
+
   return (
       <> <div name='divnavbar' id='divnavbar' className="text-dark">
-    <Navbar expand="lg" variant="light fixed-top pr-2 p-0" style={{background:'#f5c13d'}}>
-    <Navbar.Brand className="pl-2 pr-2" href="/main" ><Image src={logo} alt="Essystem" height="40"/></Navbar.Brand>
+    <Navbar expand="lg" variant="light fixed-top pr-2 p-0" style={{background:'#c9ddc7'}}>
+    <Navbar.Brand className="pl-2 pr-2" href="/main" ><Image src={logo} alt="Essystem" height="40"/>
+    <img height="20" src={pencil} alt="Pencil" className="mr-auto mb-2"/></Navbar.Brand>
     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
     <Navbar.Collapse id="responsive-navbar-nav">
     <Nav className="mr-auto">
@@ -26,8 +30,8 @@ export default function setNavbar() {
     </Nav>  
     <Navbar.Text className="font-weight-bold">
     <img name='navuser' id='navuser' className="mr-3" src={user} alt="User" height="26"/>
-      Usuário: <a href="#login" className="alert-link" style={{color:'#01770a'}}>Gregory</a>/
-    <a href="/login" className="mr-2 ml-1" size="sm" style={{color:'#c03232'}}>Logout</a>
+    Usuário: <a href="#login" className="alert-link" style={{color:'#01770a'}}>{name}</a> /
+    <a href="/login" className="mr-2 ml-1" size="sm" style={{color:'#c03232'}}>Sair</a>
     </Navbar.Text>
     <Form inline className="ml-2">
       

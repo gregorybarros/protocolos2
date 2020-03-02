@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import {listClient} from '../Api/Clients'
-import {newProtocol} from '../Api/Protocols'
 
 // Bootstrap
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
+import api from '../../services/api'
 
 
-export default function AddProtocol() {
+export default function AddProtocol(props) {
+
+    const [user] = useState(JSON.parse(localStorage.getItem('@CodeApi:user')))
 
     const [showNew, setShowNew] = useState(false);
     const handleCloseNew = () => setShowNew(false);
@@ -22,6 +24,7 @@ export default function AddProtocol() {
     useEffect(() => {
 
         async function loadClients() {
+            setClient(props.client)
 
             const response = await listClient()
             setClients(response.data)
@@ -31,18 +34,20 @@ export default function AddProtocol() {
     }, [])
 
     async function handleSubmit(e) {
-        e.preventDefault()
+
         try {
-            const response = await newProtocol(
+            const response = await api.post('/protocols/addprotocol', {
                 client,
                 title,
-                content
-            )
+                content,
+                user:user._id
+            })
             handleCloseNew()
             setError([{ message: response.data.message }])
 
         }
         catch (err) {
+            e.preventDefault()
             if (err.response.data.errors)
                 return setError(err.response.data.errors)
 
@@ -58,29 +63,30 @@ export default function AddProtocol() {
     return (
         <><div name="divnavbar" id="divnavbar">
             <div name="divbutton" id="divbutton"><Button 
-    variant="warning pb-3 pt-3" style={{height:'100%', width:'100%'}} 
+    variant="warning pb-3 pt-3" style={{height:'100%', width:'100%', background:'#f5c13d'}} 
     type="button"
     onClick={handleShowNew}>
      <strong>Novo!</strong>
     </Button></div></div>
   <Modal className="text-secondary" show={showNew} onHide={handleCloseNew}>
-        <Modal.Header className="border-light pb-0" closeButton>
+        <Modal.Header className="border-white pb-0" closeButton>
         <p>Novo protocolo</p>
         </Modal.Header> 
         <form onSubmit={handleSubmit} className="pl-3 pr-3">
         <label>Cliente</label>
-              <select value={0} 
+              <select 
                      name="client" id="client"
                      onChange={e => setClient(e.target.value)}
                      className="form-control m-0 p-0"
+                     defaultValue={props.client}
                     >
-                    <option value="0">Defina um cliente</option>
+                    <option value="0">Defina um cliente</option>}
                     {clients.map(c => (                        
                         <option key={c._id}value={c._id}>{c.name}</option>                           
                     ))}
                 </select>
        
-        <Modal.Body className='p-0 m-0'>
+        <Modal.Body className='p-0 m-0 mt-2'>
             <label>Titulo</label>
             <input className="form-control mb-2" type="text" name="title" 
             placeholder="Digite um titulo" onChange={e => setTitle(e.target.value)}

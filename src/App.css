@@ -34,6 +34,14 @@ p {
    word-wrap: break-word;
 }
 
+p#client {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+   word-wrap: break-word;
+}
+
 span {
   word-wrap: break-word;
 }
@@ -67,7 +75,7 @@ div#divuser:hover{
   transition: all .3s;
 }
 div#divscore{
-  font-family:'Fredericka the Great','Roboto', Arial, Helvetica, sans-serif;
+  font-family:'Roboto', Arial, Helvetica, sans-serif;
 }
 
 div#grade{
@@ -80,15 +88,15 @@ div#grade{
 div#divbutton:hover{
   transform: scale(0.98);
   transition: all .3s;
-  box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 0px 0px;
+  box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 2px 1px;
 
 }
 div#divbutton{
-  box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 10px 3px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 10px 3px;
 
 }
 div#grade:hover{
-
   transform: scale(1.03);
   transition: all .3s;
 
@@ -104,7 +112,7 @@ display: row;
 }
 
 label#margin{
-  margin: 50px;
+  margin: 35px;
 }
 
 
