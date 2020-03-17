@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import api from '../../services/api'
 import {singleProtocol, editProtocol, deleteProtocol} from '../Api/Protocols'
 import {listClient} from '../Api/Clients'
 import UserInfo from '../Users/UserInfo'
@@ -59,7 +60,7 @@ export default function ListProtocols(props) {
 
     let [editTitle, setEditTitle] = useState('')
     let [editContent, setEditContent] = useState('')
-    const [editNum, setEditNum] = useState('')
+
 
 
 
@@ -97,23 +98,23 @@ export default function ListProtocols(props) {
 
     async function showProtocol(id){
     
-    const protocol = await singleProtocol(id)
-    
-        if (!protocol.data.client) {
+    const protocol = await api.get(`/protocols/${id}`)
+
+        if (!protocol.data.clients) {
             setClient('')
             setClientName('')  
         }    
         
-        if (protocol.data.client || !protocol.data.client == null) {
-        setClient(protocol.data.client._id)
-        setClientName(protocol.data.client.name)
+        if (protocol.data.clients || !protocol.data.clients == null) {
+        setClient(protocol.data.clients.id)
+        setClientName(protocol.data.clients.name)
         }
 
-        setEditId(protocol.data._id)
+        setEditId(protocol.data.id)
         setEditTitle(protocol.data.title)
         setEditContent(protocol.data.content)
-        setUserEdit(protocol.data.user)
-        setEditNum(protocol.data.num)
+        setUserEdit(protocol.data.users)
+
         
     
         handleShowProt()
@@ -133,7 +134,6 @@ export default function ListProtocols(props) {
         }
 
     }
-    //console.log('teste')
 
     return (
         <>
@@ -155,20 +155,20 @@ export default function ListProtocols(props) {
                         <div bg="light" 
                         id="grade" name="grade"                        
                             border="right"
-                            key={protocol._id}
+                            key={protocol.id}
                             text="dark">
                             <Card.Header className="m-0 p-1 bg-dark text-truncate d-flex">
-                                <a href={`/clients/${protocol.client._id}`} className="badge btn-dark mr-auto">
-                                    {protocol.client ? protocol.client.name : 'Sem empresa'}
+                                <a href={`/clients/${protocol.clients.id}`} className="badge btn-dark mr-auto">
+                                    {protocol.client ? protocol.clients.name : 'Sem empresa'}
                                 </a>
-                                <Button onClick={e => showProtocol(protocol._id)}
+                                <Button onClick={e => showProtocol(protocol.id)}
                                 className="badge btn-dark"
                                 style={{cursor:'pointer'}}>
-                                    {protocol.num}
+                                    {protocol.id}
                                 </Button>
                             </Card.Header>
                             <Card.Body
-                            onClick={e => showProtocol(protocol._id)}
+                            onClick={e => showProtocol(protocol.id)}
                             className='border'
                             style={{height:'78%', cursor:"pointer", background:'#fff'}}
                             >
@@ -180,10 +180,10 @@ export default function ListProtocols(props) {
                             <Card.Footer className="m-0 p-0 d-flex border" style={{background:'#d9d8d7'}}>
                             <small className="ml-2 mb-1 font-italic">Autor: 
                     <Button style={{background:'#91d1ac'}} 
-                    onClick={e => getUser(protocol.user._id)}
-                    className="text-dark badge btn-success p-1 ml-1 border">{protocol.user.name}</Button>
+                    onClick={e => getUser(protocol.users.id)}
+                    className="text-dark badge btn-success p-1 ml-1 border">{protocol.users.name}</Button>
                             </small>
-                            <small className="mr-2 font-weight-bold ml-auto">{protocol.date}
+                            <small className="mr-2 font-weight-bold ml-auto">{protocol.createdAt}
                             </small>
                             </Card.Footer>
                         </div>)):
@@ -203,16 +203,16 @@ export default function ListProtocols(props) {
   </thead>
   <tbody >
     {props.protocols.map(protocol => (
-    <tr key={protocol._id}>
-      <td onClick={e => showProtocol(protocol._id)}>{protocol.num}</td>
-      <td><a className="text-dark" href={`/clients/${protocol.client._id}`}><strong>{protocol.client.name}</strong></a></td>
-    <td onClick={e => showProtocol(protocol._id)}><p>{protocol.title}</p></td>
-    <td onClick={e => showProtocol(protocol._id)}><p>{protocol.content}</p></td>
+    <tr key={protocol.id}>
+      <td onClick={e => showProtocol(protocol.id)}>{protocol.id}</td>
+      <td><a className="text-dark" href={`/clients/${protocol.clients.id}`}><strong>{protocol.clients.name}</strong></a></td>
+    <td onClick={e => showProtocol(protocol.id)}><p>{protocol.title}</p></td>
+    <td onClick={e => showProtocol(protocol.id)}><p>{protocol.content}</p></td>
     <td><Button 
     style={{background:'#91d1ac'}} 
     className="text-dark badge btn-success p-1 ml-1 border"
-    onClick={e => getUser(protocol.user._id)}
-    ><strong>{protocol.user.name}</strong></Button></td>
+    onClick={e => getUser(protocol.users.id)}
+    ><strong>{protocol.users.name}</strong></Button></td>
     </tr>
       ))}
   </tbody>
@@ -251,10 +251,10 @@ export default function ListProtocols(props) {
                 <p>{clientName?clientName:"Sem empresa"}</p>
           </Modal.Title>
         </Modal.Header>
-                <small className="mt-1 ml-3">Prot. {editNum}</small>
+                <small className="mt-1 ml-3">Prot. {editId}</small>
         <Modal.Body style={{cursor:'pointer'}}
         
-        onClick={e=> user._id===userEdit._id || user.eAdmin?(handleCloseProt(), handleShowEdit()):null}
+        onClick={e=> user.id===userEdit.id || user.eAdmin?(handleCloseProt(), handleShowEdit()):null}
         >
             <p><strong>{editTitle}</strong></p>   
             <span>&nbsp;&nbsp;{editContent}</span>
@@ -263,7 +263,7 @@ export default function ListProtocols(props) {
             <small className="ml-2 mb-1 font-italic mr-auto">Autor: 
                     <a href="#" style={{background:'#91d1ac'}} className="text-dark badge badge-success p-1 ml-1">{userEdit.name}</a>
             </small>
-        {user._id===userEdit._id || user.eAdmin?
+        {user.id===userEdit.id || user.eAdmin?
         <div>
           <Button variant="secondary" onClick={e=> (handleCloseProt(), handleShowEdit())}>
             Editar
@@ -291,7 +291,7 @@ export default function ListProtocols(props) {
                     {!client && 
                     <option value="0">Defina um cliente</option> }
                     {clients.map(c => (                        
-                        <option key={c._id}value={c._id}>{c.name}</option>                           
+                        <option key={c.id}value={c.id}>{c.name}</option>                           
                     ))}
                 </select>
        

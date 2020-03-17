@@ -22,9 +22,9 @@ export default function Protocols({history}) {
     const [searchProt, setSearchProt] = useState(0)
 
     const [layout, setLayout] = useState(false)
-    const [sort, setSort] = useState('desc')
-    const [page, setPage] = useState(1) // seleciona pagina
-    const [totalPerPage] = useState(30) // total por paginas
+    const [sort, setSort] = useState('DESC')
+    const [page, setPage] = useState(0) // seleciona pagina
+    const [perPage] = useState(30) // total por paginas
     const [error, setError] = useState(false) // infinite scroll
     const [errorSearch, setErrorSearch] = useState('')
     const [loading, setLoading] = useState(true)
@@ -38,16 +38,16 @@ export default function Protocols({history}) {
     async function loadPage(){
         
         setError(false)
-        const getProtocols = await api.get(`/protocols/?sort=${sort}&page=${page}&perPage=${totalPerPage}`)
-
-      if(page>getProtocols.data.pages) {
+        const getProtocols = await api.get(`/protocols/?sort=${sort}&page=${page}&perPage=${perPage}`)
+        
+      if(page>getProtocols.data.count) {
         return setError(false)
 
       }else {
       
-        setError(true)      
+        setError(false)//true      
         
-        setProtocols([...protocols,...getProtocols.data.docs])
+        setProtocols([...protocols,...getProtocols.data.rows])
         
         setPage(page+1)
         setLoading(false)
@@ -71,7 +71,7 @@ export default function Protocols({history}) {
             e.preventDefault()
             try {
                 const resp = await api.get(`/protocols/?filter=num&equal=${searchProt}`)
-            setProtocols(resp.data.docs)
+            setProtocols(resp.data.rows)
 
             if(resp.data.docs.length==0)
             return setErrorSearch(searchProt),setLoading(false)

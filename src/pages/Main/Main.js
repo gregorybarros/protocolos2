@@ -22,10 +22,10 @@ export default function Main({ match }) {
     const [user] = useState(JSON.parse(localStorage.getItem('@CodeApi:user')))
     const [userInfo, setUserInfo] = useState({})
     const [protocols, setProtocols] = useState([])
-    const [page, setPage] = useState(1) // seleciona pagina
-    const [totalPerPage] = useState(20) // total por paginas
-    const [equal] = useState(user._id) // total pages
-    const [sort, setSort] = useState('desc')
+    const [page, setPage] = useState(0) // seleciona pagina
+    const [perPage] = useState(20) // total por paginas
+    const [equal] = useState(user.id) // total pages
+    const [sort, setSort] = useState('DESC')
     const [layout, setLayout] = useState(false)
     const [error, setError] = useState(false)
 
@@ -48,19 +48,20 @@ export default function Main({ match }) {
 
       setError(false)
 
-      const resp = await api.get(`/users/${user._id}`)
+      const resp = await api.get(`/users/${match.params.id}`)
       setUserInfo(resp.data)
-
-      const getUserProtocols = await api.get(`/protocols/?sort=${sort}&page=${page}&perPage=${totalPerPage}&filter=user&equal=${equal}`)
       
-      if(page>getUserProtocols.data.docs) {
+      const getUserProtocols = await api.get(`/protocols/?page=${page}&perPage=${perPage}&sort=${sort}&equal=${equal}`)
+      
+      if(page>getUserProtocols.count) {
         return setError(false)
 
       }else {
       
-        setError(true)
-        
-        setProtocols([...protocols,...getUserProtocols.data.docs])
+        setError(false) // true
+
+        console.log(getUserProtocols)
+        setProtocols([...protocols,...getUserProtocols.data.rows])
             
         setPage(page+1)
 
@@ -105,7 +106,7 @@ className="mr-0 d-flex">
         </small>
     <div className="p-3" style={{background:'#c9ddc7'}}>
    <ListProtocol 
-   layout={layout} protocols={protocols} page={page} loadPage={loadPage} error={error} showUser={showUser} user={user._id}/>
+   layout={layout} protocols={protocols} page={page} loadPage={loadPage} error={error} showUser={showUser} user={user.id}/>
    </div>
   </Card >
   </Container>

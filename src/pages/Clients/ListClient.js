@@ -83,7 +83,7 @@ export default function ListCLients(props) {
     const client = await singleClient(id)
     console.log(client)
 
-        setClient(client.data._id)
+        setClient(client.data.id)
 
         setEditCode(client.data.code)
         setEditName(client.data.name)
@@ -99,7 +99,7 @@ export default function ListCLients(props) {
         setEditPhone(client.data.phone)
         setEditCell(client.data.cell)
         setEditSoft(client.data.soft)
-        setEditId(client.data._id)
+        setEditId(client.data.id)
 
     
         handleShowClient()
@@ -126,11 +126,11 @@ function linkClient(id){
                     {!page?props.clients.map(client => (
                       <div bg="light" 
                       id="grade" name="grade"                        
-                          key={client._id}
+                          key={client.id}
                           className="m-2"
                           border="right"                     
                           style={{ width: '14rem', height:'100%', cursor:"pointer"}}
-                            onClick={e => showCli(client._id)}>
+                            onClick={e => showCli(client.id)}>
                             <Card.Header className="m-0 p-1 bg-dark text-truncate d-flex">
                                 <a className="text-light badge badge-dark mr-auto">
                                     {client.name}
@@ -178,12 +178,12 @@ function linkClient(id){
   </thead>
   <tbody>
     {props.clients.map(client => (
-    <tr key={client._id}>
-      <td onClick={e => showCli(client._id)}>{client.code}</td>
-      <td onClick={e => showCli(client._id)}><strong>{client.name}</strong></td>
-      <td onClick={e => showCli(client._id)}>{client.category}</td>
-    <td onClick={e => showCli(client._id)}>{client.resp}</td>
-    <td onClick={e => showCli(client._id)}>{client.phone}</td>
+    <tr key={client.id}>
+      <td onClick={e => showCli(client.id)}>{client.code}</td>
+      <td onClick={e => showCli(client.id)}><strong>{client.name}</strong></td>
+      <td onClick={e => showCli(client.id)}>{client.category}</td>
+    <td onClick={e => showCli(client.id)}>{client.resp}</td>
+    <td onClick={e => showCli(client.id)}>{client.phone}</td>
     <td>
       <a target="_blank" href={
       `https://www.google.com/maps/place/${client.adress}+${client.city}+${client.state}+${client.zip}`
@@ -192,7 +192,7 @@ function linkClient(id){
         {client.adress}, {client.city}/{client.state}
       </a>
       </td>
-    <td onClick={e => showCli(client._id)}>{moment(client.since).format('L')}</td>
+    <td onClick={e => showCli(client.id)}>{moment(client.since).format('L')}</td>
 
     </tr>
       ))}
@@ -252,7 +252,7 @@ function linkClient(id){
     <ListGroupItem>Cidade: {editCity} / {editState}</ListGroupItem>
     <ListGroupItem>Endereco: {editAdress}</ListGroupItem>
     <ListGroupItem>Categoria: {editCategory}</ListGroupItem>
-    <ListGroupItem>Softwares: {editSoft.map(soft => ` ${soft} / `)}</ListGroupItem>
+    <ListGroupItem>Softwares: {editSoft}</ListGroupItem>
     <ListGroupItem>Responsaveis: {editResp}</ListGroupItem>
     <ListGroupItem>Telefones: {editPhone}</ListGroupItem>
   </ListGroup>

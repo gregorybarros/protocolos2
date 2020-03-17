@@ -57,7 +57,7 @@ export default function Clients({history}) {
                     >
                     <option value="0">Escolha um cliente</option>
                     {clients.map(c => (                        
-                        <option key={c._id}value={c._id}>{c.name}</option>                           
+                        <option key={c.id}value={c.id}>{c.name}</option>                           
                     ))}
                 </select>
                     <ButtonGroup>

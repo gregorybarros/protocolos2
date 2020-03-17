@@ -37,12 +37,12 @@ export default function ListUser(props){
     user={user}/>
       <div name='divnavbar' id='divnavbar' className="form-inline m-2">
               {props.users.map(user =>
-               <Jumbotron key={user._id}
+               <Jumbotron key={user.id}
                className="p-3 pb-5 pt-4 text-dark mt-3 font-weight-bold" 
                style={{background:'#c9ddc7', height:'250px', 
                width:'200px'}}>
                  <div name='divuser' id='divuser'className="d-flex"
-                 onClick={e => getUser(user._id)}
+                 onClick={e => getUser(user.id)}
                  style={{cursor:'pointer'}}>
                      <Image style={{boxShadow:'0px 10px 10px #0005'}} className="mx-auto mb-3 border border-secondary" src={useri} alt="User" height="120" roundedCircle/>
                  </div>

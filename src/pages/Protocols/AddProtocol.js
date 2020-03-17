@@ -36,11 +36,11 @@ export default function AddProtocol(props) {
     async function handleSubmit(e) {
 
         try {
-            const response = await api.post('/protocols/addprotocol', {
+            const response = await api.post('/protocols', {
                 client,
                 title,
                 content,
-                user:user._id
+                user:user.id
             })
             handleCloseNew()
             setError([{ message: response.data.message }])
@@ -82,7 +82,7 @@ export default function AddProtocol(props) {
                     >
                     <option value="0">Defina um cliente</option>}
                     {clients.map(c => (                        
-                        <option key={c._id}value={c._id}>{c.name}</option>                           
+                        <option key={c.id}value={c.id}>{c.name}</option>                           
                     ))}
                 </select>
        

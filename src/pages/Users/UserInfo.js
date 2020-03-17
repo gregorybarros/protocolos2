@@ -46,7 +46,7 @@ export default function UserInfo(props){
       return 
 
       const load = await api.get(`/users/${props.user}`)
-      setId(load.data._id)
+      setId(load.data.id)
       setName(load.data.name)
       setSecondName(load.data.secondName)
       setEmail(load.data.email)
@@ -73,7 +73,7 @@ export default function UserInfo(props){
 
       try {
           const response = await api.put('/users/edit', {
-              _id:id,
+              id:id,
               name,
               secondName,
               email,
@@ -142,7 +142,7 @@ export default function UserInfo(props){
 
     “{phrase?phrase:'Nenhuma frase inserida.'}”
 
-    { user._id===id || user.eAdmin?
+    { user.id===id || user.eAdmin?
     <Button 
     onClick={e => setEditPhrase()} 
     size="sm"
@@ -173,7 +173,7 @@ export default function UserInfo(props){
     target="_blank" className="mt-3 ml-2">
       Localização no Google
       </Card.Link>
-      { user._id===id || user.eAdmin?
+      { user.id===id || user.eAdmin?
       <Button onClick={e => EditUser()} size="sm"className="btn-warning ml-auto">Editar usuario</Button>:null}
   </Card.Body>
       </Modal>

@@ -18,7 +18,7 @@ export default function Routes(){
         <Route path="/help" exact component={Help}/>
         <Route path="/users" exact component={Users}/>
         <Route path="/login" exact component={Login}/>
-        <Route path="/main" component={Main}/>
+        <Route path="/main/:id" component={Main}/>
         <Route path="/clients" exact component={Clients}/>
         <Route path="/clients/:id" exact component={SingleClient}/>
         <Route path="/protocols" exact component={Protocols}/>

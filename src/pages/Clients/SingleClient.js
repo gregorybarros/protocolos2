@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react'
+import api from '../../services/api'
 import Card from 'react-bootstrap/Card'
 import { listProtocol } from '../Api/Protocols'
 import { singleClient, editClient } from '../Api/Clients'
@@ -41,7 +42,7 @@ export default function SingleClient({match, history}){
   const [editState, setEditState] = useState('')// Estado
   const [editObs, setEditObs] = useState('')//Observacoes
   const [editPhone, setEditPhone] = useState([])//Telefones
-  const [editSoft, setEditSoft] = useState([])//Softwaresedit
+  const [editSoft, setEditSoft] = useState('')//Softwaresedit
 
   const [page] = useState(1)
   const [perPage] = useState(10)
@@ -92,20 +93,21 @@ export default function SingleClient({match, history}){
     async function setEditClient(id){
 
       try {
-          await editClient(
-            editCode,
-            editName,
-            editCategory,
-            editResp,
-            editEmail,
-            editAdress,
-            editCity,
-            editZip,
-            editState,
-            editSince,
-            editObs,
-            editSoft,
-            editPhone, id)
+          await api.put(`/clients/${id}`, {
+            code:editCode,
+            name:editName,
+            category:editCategory,
+            resp:editResp,
+            email:editEmail,
+            adress:editAdress,
+            city:editCity,
+            zip:editZip,
+            state:editState,
+            since:editSince,
+            obs:editObs,
+            soft:editSoft,
+            phone:editPhone
+          })
 
           handleCloseEdit()
           setRefresh(true)
@@ -123,11 +125,11 @@ function selectEditSoft(e){
   const res = editSoft.indexOf(e)       
 
   if(res > -1){
-      let test = editSoft.splice(res,1)
+      let test = () => editSoft.splice(res,1)
       setEditSoft(editSoft,test)
 
   }else{
-      setEditSoft([...editSoft,e]) 
+      setEditSoft(...editSoft,e) 
 
   }
 
@@ -166,7 +168,7 @@ return true
     <ListGroupItem>Cidade: {client.city} / {client.state}</ListGroupItem>
     <ListGroupItem>Endereco: {client.adress}</ListGroupItem>
     <ListGroupItem>Categoria: {client.category}</ListGroupItem>
-    <ListGroupItem>Softwares: {soft.map(soft => ` ${soft} / `)}</ListGroupItem>
+    <ListGroupItem>Softwares: {soft}</ListGroupItem>
     <ListGroupItem>Responsaveis: {client.resp}</ListGroupItem>
     <ListGroupItem>Telefones: {client.phone}</ListGroupItem>
   </ListGroup>
@@ -365,7 +367,7 @@ return true
           <Button variant="secondary " onClick={handleCloseEdit}>
             Cancelar
           </Button>
-          <Button  variant="success ml-auto" onClick={e => setEditClient(client._id)}>
+          <Button  variant="success ml-auto" onClick={e => setEditClient(client.id)}>
             Salvar
           </Button>
         </Modal.Footer>

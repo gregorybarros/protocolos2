@@ -17,7 +17,7 @@ export default function EditProtocols({match, history}) {
         async function loadEdit() {
             try {
 
-                const LoadSingleProt = await singleProtocol(match.params.id)
+                const LoadSingleProt = await api.get(match.params.id)
 
             setProtocol(LoadSingleProt.data)
             setTitle(LoadSingleProt.data.title)
@@ -39,7 +39,7 @@ export default function EditProtocols({match, history}) {
     async function handleSubmit(e) {
         e.preventDefault()
         try {
-           await editProtocol(title, content, client, protocol._id)
+           await editProtocol(title, content, client, protocol.id)
                 
         } catch (err) {
             console.log(err)
@@ -53,13 +53,13 @@ export default function EditProtocols({match, history}) {
             <div className="login-content">
                 <h2>Editar protocolo:</h2><br />
                 <form onSubmit={handleSubmit}>
-                    <select value={!!client && client._id} name="client" id="client"
+                    <select value={!!client && client.id} name="client" id="client"
                     onChange={e => setClient(e.target.value)}
                     >
                         {!client && 
                         <option value="0">Defina um cliente</option> }
                         {clients.map(c => (                        
-                            <option key={c._id}value={c._id}>{c.name}</option>
+                            <option key={c.id}value={c.id}>{c.name}</option>
 
                             
                         ))}

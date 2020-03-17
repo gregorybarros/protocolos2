@@ -18,20 +18,18 @@ export default function Login({history}) {
         try {
         e.preventDefault()
 
-
-            const response = await api.post('/auth/auth', {
+            const response = await api.post('/auth', {
                 email : 'gregory.barros@hotmail.com',
-                password: '123456'
+                password: '123'
             })
             
             const { user, token} = response.data
             await localStorage.clear()
             await localStorage.setItem('@CodeApi:token', token)
             await localStorage.setItem('@CodeApi:user', JSON.stringify(user))
-            const { _id } = user
-            
-            console.log(response.data)
-            history.push(`/main/${_id}`, {user})
+            const { id } = user
+
+            history.push(`/main/${id}`, {user})
     
         } catch (err) {
             setErroAuth(err.response.data)
